@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harol & Jan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Raleway:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red: #ff4e6a;
+      --orange: #ff9a3c;
+      --yellow: #ffe44d;
+      --green: #4ecb71;
+      --blue: #4eaaff;
+      --purple: #c06eff;
+      --pink: #ff6ec7;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0d0d1a;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    /* Animated pride bg gradient */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg,
+        rgba(255,78,106,0.15),
+        rgba(255,154,60,0.12),
+        rgba(255,228,77,0.10),
+        rgba(78,203,113,0.12),
+        rgba(78,170,255,0.15),
+        rgba(192,110,255,0.15)
+      );
+      animation: bgShift 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0%   { filter: hue-rotate(0deg) brightness(1); }
+      100% { filter: hue-rotate(30deg) brightness(1.15); }
+    }
+
+    /* Floating confetti dots */
+    .confetti-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp var(--dur) ease-in infinite var(--delay);
+    }
+
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) scale(0.5) rotate(0deg); }
+      10%  { opacity: 0.85; }
+      90%  { opacity: 0.85; }
+      100% { opacity: 0; transform: translateY(-100vh) scale(1) rotate(360deg); }
+    }
+
+    /* Main card */
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 3rem 3.5rem 2.5rem;
+    }
+
+    /* Rainbow arc canvas */
+    .rainbow-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+    canvas#rainbow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Names */
+    .names {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.8rem, 11vw, 8rem);
+      font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(90deg,
+        var(--red), var(--orange), var(--yellow),
+        var(--green), var(--blue), var(--purple), var(--pink)
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(192,110,255,0.4));
+      animation: nameGlow 3s ease-in-out infinite alternate;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes nameGlow {
+      0%   { filter: drop-shadow(0 0 20px rgba(255,78,106,0.5)); }
+      33%  { filter: drop-shadow(0 0 30px rgba(78,170,255,0.5)); }
+      66%  { filter: drop-shadow(0 0 30px rgba(192,110,255,0.6)); }
+      100% { filter: drop-shadow(0 0 20px rgba(78,203,113,0.5)); }
+    }
+
+    /* Ampersand */
+    .amp {
+      font-style: italic;
+      font-weight: 400;
+      margin: 0 0.15em;
+    }
+
+    /* Hearts row */
+    .hearts {
+      font-size: 1.6rem;
+      margin: 1.2rem 0 1rem;
+      letter-spacing: 0.3em;
+      animation: heartPop 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes heartPop {
+      0%   { transform: scale(1); }
+      100% { transform: scale(1.12); }
+    }
+
+    /* Tagline */
+    .tagline {
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-top: 0.5rem;
+    }
+
+    /* Bottom tag */
+    .bottom-tag {
+      margin-top: 2.2rem;
+      display: inline-block;
+      font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.6rem;
+      border-radius: 999px;
+      border: 1.5px solid transparent;
+      background:
+        linear-gradient(#0d0d1a, #0d0d1a) padding-box,
+        linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple)) border-box;
+      color: rgba(255,255,255,0.75);
+      animation: borderSpin 4s linear infinite;
+    }
+
+    @keyframes borderSpin {
+      0%   { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    /* Fade in on load */
+    .container { opacity: 0; animation: fadeIn 1s ease forwards 0.3s; }
+    @keyframes fadeIn { to { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <div class="bg"></div>
+  <div class="confetti-wrap" id="confetti"></div>
+
+  <div class="container">
+    <div class="rainbow-wrap" id="rainbowWrap">
+      <canvas id="rainbow"></canvas>
+      <h1 class="names">Harol <span class="amp">&</span> Jan</h1>
+    </div>
+
+    <div class="hearts">🏳️‍🌈 ❤️ 🏳️‍🌈</div>
+    <p class="tagline">Forever and always</p>
+    <div class="bottom-tag">Jan & Harol · Gay Buddies Forever 🌈</div>
+  </div>
+
+  <script>
+    /* ── Confetti dots ── */
+    const colors = ['#ff4e6a','#ff9a3c','#ffe44d','#4ecb71','#4eaaff','#c06eff','#ff6ec7'];
+    const wrap = document.getElementById('confetti');
+    for (let i = 0; i < 55; i++) {
+      const d = document.createElement('div');
+      const c = colors[i % colors.length];
+      const size = 5 + Math.random() * 9;
+      d.className = 'dot';
+      d.style.cssText = `
+        left: ${Math.random() * 100}%;
+        bottom: -20px;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${c};
+        --dur: ${4 + Math.random() * 6}s;
+        --delay: ${Math.random() * 7}s;
+      `;
+      wrap.appendChild(d);
+    }
+
+    /* ── Rainbow arc animation ── */
+    const canvas = document.getElementById('rainbow');
+    const wrap2 = document.getElementById('rainbowWrap');
+    const ctx = canvas.getContext('2d');
+
+    const PAUSE = 2000;   // pause between sweeps (ms)
+    const SWEEP = 1400;   // time to sweep across (ms)
+    const ARC_COLORS = ['#ff4e6a','#ff7a3c','#ffe44d','#4ecb71','#4eaaff','#c06eff'];
+    const STROKE = 7;
+    const ARC_COUNT = ARC_COLORS.length;
+
+    let arcRadius = 0;
+
+    function resize() {
+      const r = wrap2.getBoundingClientRect();
+      canvas.width = r.width;
+      arcRadius = r.width * 0.44;
+      canvas.height = arcRadius + 40;
+      canvas.style.top = `-${canvas.height - 10}px`;
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    let startTime = null;
+    let phase = 'sweep';
+    let pauseStart = null;
+
+    function easeInOut(t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+
+    function drawRainbow(progress) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2;
+      const cy = canvas.height;
+
+      ctx.globalAlpha = 0.52;
+      ctx.lineCap = 'round';
+
+      for (let i = ARC_COUNT - 1; i >= 0; i--) {
+        const r = arcRadius - i * (STROKE + 3);
+        if (r <= 0) continue;
+
+        // The arc goes from Math.PI to 0 (left to right semicircle)
+        // Arc circumference of a semicircle = π * r
+        const circumference = Math.PI * r;
+
+        // How much of the stroke to draw (0 = none, circumference = full)
+        const drawn = progress * circumference;
+
+        // setLineDash makes only `drawn` px of the stroke visible,
+        // then a huge gap so the rest is invisible
+        ctx.setLineDash([drawn, circumference]);
+        // lineDashOffset shifts where the dash starts — we start from
+        // the left end of the arc (Math.PI side) by setting offset to 0
+        ctx.lineDashOffset = 0;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, Math.PI, 0);
+        ctx.strokeStyle = ARC_COLORS[i];
+        ctx.lineWidth = STROKE + 1;
+        ctx.shadowColor = ARC_COLORS[i];
+        ctx.shadowBlur = 14;
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]); // reset dash
+      ctx.globalAlpha = 1;
+    }
+
+    function animate(ts) {
+      if (phase === 'sweep') {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        const raw = Math.min(elapsed / SWEEP, 1);
+        const progress = easeInOut(raw);
+        drawRainbow(progress);
+        if (raw >= 1) {
+          phase = 'pause';
+          pauseStart = ts;
+        }
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (ts - pauseStart >= PAUSE) {
+          phase = 'sweep';
+          startTime = null;
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
