@@ -1,319 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harol & Jan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Raleway:wght@300;400&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --red: #ff4e6a;
-      --orange: #ff9a3c;
-      --yellow: #ffe44d;
-      --green: #4ecb71;
-      --blue: #4eaaff;
-      --purple: #c06eff;
-      --pink: #ff6ec7;
-    }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: #0d0d1a;
-      font-family: 'Raleway', sans-serif;
-    }
-
-    /* Animated pride bg gradient */
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background: linear-gradient(135deg,
-        rgba(255,78,106,0.15),
-        rgba(255,154,60,0.12),
-        rgba(255,228,77,0.10),
-        rgba(78,203,113,0.12),
-        rgba(78,170,255,0.15),
-        rgba(192,110,255,0.15)
-      );
-      animation: bgShift 8s ease-in-out infinite alternate;
-    }
-
-    @keyframes bgShift {
-      0%   { filter: hue-rotate(0deg) brightness(1); }
-      100% { filter: hue-rotate(30deg) brightness(1.15); }
-    }
-
-    /* Floating confetti dots */
-    .confetti-wrap {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .dot {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0;
-      animation: floatUp var(--dur) ease-in infinite var(--delay);
-    }
-
-    @keyframes floatUp {
-      0%   { opacity: 0; transform: translateY(0) scale(0.5) rotate(0deg); }
-      10%  { opacity: 0.85; }
-      90%  { opacity: 0.85; }
-      100% { opacity: 0; transform: translateY(-100vh) scale(1) rotate(360deg); }
-    }
-
-    /* Main card */
-    .container {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 3rem 3.5rem 2.5rem;
-    }
-
-    /* Rainbow arc canvas */
-    .rainbow-wrap {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 0.5rem;
-    }
-
-    canvas#rainbow {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: none;
-      z-index: 3;
-    }
-
-    /* Names */
-    .names {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(3.8rem, 11vw, 8rem);
-      font-weight: 700;
-      line-height: 1;
-      background: linear-gradient(90deg,
-        var(--red), var(--orange), var(--yellow),
-        var(--green), var(--blue), var(--purple), var(--pink)
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 30px rgba(192,110,255,0.4));
-      animation: nameGlow 3s ease-in-out infinite alternate;
-      position: relative;
-      z-index: 2;
-    }
-
-    @keyframes nameGlow {
-      0%   { filter: drop-shadow(0 0 20px rgba(255,78,106,0.5)); }
-      33%  { filter: drop-shadow(0 0 30px rgba(78,170,255,0.5)); }
-      66%  { filter: drop-shadow(0 0 30px rgba(192,110,255,0.6)); }
-      100% { filter: drop-shadow(0 0 20px rgba(78,203,113,0.5)); }
-    }
-
-    /* Ampersand */
-    .amp {
-      font-style: italic;
-      font-weight: 400;
-      margin: 0 0.15em;
-    }
-
-    /* Hearts row */
-    .hearts {
-      font-size: 1.6rem;
-      margin: 1.2rem 0 1rem;
-      letter-spacing: 0.3em;
-      animation: heartPop 1.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes heartPop {
-      0%   { transform: scale(1); }
-      100% { transform: scale(1.12); }
-    }
-
-    /* Tagline */
-    .tagline {
-      font-size: clamp(0.85rem, 2vw, 1.05rem);
-      font-weight: 300;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.55);
-      margin-top: 0.5rem;
-    }
-
-    /* Bottom tag */
-    .bottom-tag {
-      margin-top: 2.2rem;
-      display: inline-block;
-      font-size: clamp(0.75rem, 1.8vw, 0.95rem);
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      padding: 0.5rem 1.6rem;
-      border-radius: 999px;
-      border: 1.5px solid transparent;
-      background:
-        linear-gradient(#0d0d1a, #0d0d1a) padding-box,
-        linear-gradient(90deg, var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple)) border-box;
-      color: rgba(255,255,255,0.75);
-      animation: borderSpin 4s linear infinite;
-    }
-
-    @keyframes borderSpin {
-      0%   { filter: hue-rotate(0deg); }
-      100% { filter: hue-rotate(360deg); }
-    }
-
-    /* Fade in on load */
-    .container { opacity: 0; animation: fadeIn 1s ease forwards 0.3s; }
-    @keyframes fadeIn { to { opacity: 1; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lando Norris</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papaya: #FF8000;
+    --papaya-light: #FFA040;
+    --papaya-dark: #CC6600;
+    --gulf-blue: #0067B1;
+    --gulf-blue-dark: #004A7F;
+    --gulf-blue-light: #1A8ADE;
+    --chrome: #E8E8E8;
+    --dark: #0A0A0A;
+    --darker: #050505;
+    --text-muted: #888;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--darker); color: #fff; font-family: 'Barlow', sans-serif; overflow-x: hidden; }
+  .hero {
+    position: relative; width: 100%; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 80%, #1a0a00 0%, var(--darker) 60%);
+  }
+  .circuit-bg {
+    position: absolute; inset: 0; opacity: 0.05;
+    background-image: linear-gradient(var(--papaya) 1px, transparent 1px), linear-gradient(90deg, var(--papaya) 1px, transparent 1px);
+    background-size: 80px 80px;
+    animation: gridPan 20s linear infinite;
+  }
+  @keyframes gridPan { 0% { background-position: 0 0; } 100% { background-position: 80px 80px; } }
+  .track-container {
+    position: relative; width: 100%; max-width: 1100px; margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 50px 20px 20px;
+  }
+  .header-wrap { text-align: center; position: relative; z-index: 10; margin-bottom: 24px; }
+  .num-badge {
+    display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--papaya);
+    border: 1.5px solid var(--papaya); padding: 4px 16px; margin-bottom: 14px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    animation: fadeDown 0.8s ease both;
+  }
+  .hero-name {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(72px, 11vw, 140px); line-height: 0.88; text-transform: uppercase; letter-spacing: -2px;
+    background: linear-gradient(135deg, #fff 0%, var(--chrome) 40%, var(--papaya-light) 70%, var(--papaya) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: fadeUp 0.9s ease both 0.1s;
+  }
+  .hero-sub {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+    font-size: clamp(13px, 2vw, 18px); letter-spacing: 6px; text-transform: uppercase;
+    color: var(--gulf-blue-light); margin-top: 8px;
+    animation: fadeUp 0.9s ease both 0.25s;
+  }
+  .track-svg-wrap { position: relative; width: 100%; max-width: 920px; animation: fadeUp 1s ease both 0.4s; }
+  .stats-strip {
+    display: flex; gap: 0; width: 100%; max-width: 920px; margin-top: 32px;
+    border: 1px solid rgba(255,128,0,0.2); animation: fadeUp 1s ease both 0.6s; overflow: hidden;
+  }
+  .stat {
+    flex: 1; padding: 22px 16px; text-align: center;
+    border-right: 1px solid rgba(255,128,0,0.15);
+    background: rgba(255,128,0,0.03); transition: background 0.3s; position: relative;
+  }
+  .stat:last-child { border-right: none; }
+  .stat:hover { background: rgba(255,128,0,0.08); }
+  .stat::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--papaya); transform: scaleX(0); transition: transform 0.3s; transform-origin: left;
+  }
+  .stat:hover::before { transform: scaleX(1); }
+  .stat-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 44px; line-height: 1; color: var(--papaya); display: block; }
+  .stat-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; display: block; }
+  .team-bar { width: 100%; background: linear-gradient(90deg, var(--gulf-blue-dark), var(--gulf-blue), var(--papaya), var(--papaya-dark)); height: 5px; position: relative; overflow: hidden; }
+  .team-bar::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2.5s ease infinite;
+  }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  .info-section { background: var(--dark); padding: 70px 40px; display: flex; justify-content: center; }
+  .info-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    max-width: 920px; width: 100%;
+    background: rgba(255,128,0,0.1); border: 1px solid rgba(255,128,0,0.1);
+  }
+  .info-card { background: var(--dark); padding: 36px 28px; position: relative; overflow: hidden; transition: background 0.3s; }
+  .info-card:hover { background: #111; }
+  .info-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--gulf-blue), var(--papaya));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .info-card:hover::before { transform: scaleX(1); }
+  .info-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+  .info-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--papaya); margin-bottom: 10px; }
+  .info-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 26px; color: #fff; line-height: 1; }
+  .info-sub { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+  .footer { background: var(--darker); border-top: 1px solid rgba(255,128,0,0.1); padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .footer-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 22px; letter-spacing: 3px; text-transform: uppercase; color: var(--papaya); }
+  .footer-text { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; }
+  .mcl-tag { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 2px; color: var(--gulf-blue-light); text-transform: uppercase; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 640px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .stats-strip { flex-wrap: wrap; }
+    .stat { flex: 0 0 50%; border-bottom: 1px solid rgba(255,128,0,0.15); }
+    .footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
 </head>
 <body>
 
-  <div class="bg"></div>
-  <div class="confetti-wrap" id="confetti"></div>
+<div class="hero">
+  <div class="circuit-bg"></div>
+  <div class="track-container">
 
-  <div class="container">
-    <div class="rainbow-wrap" id="rainbowWrap">
-      <canvas id="rainbow"></canvas>
-      <h1 class="names">Harol <span class="amp">&</span> Jan</h1>
+    <div class="header-wrap">
+      <div class="num-badge">No. 4 &nbsp;·&nbsp; McLaren F1 Team &nbsp;·&nbsp; Monaco GP 2025 Winner</div>
+      <h1 class="hero-name">Lando Norris</h1>
+      <p class="hero-sub">McLaren Racing &nbsp;·&nbsp; Circuit de Monaco</p>
     </div>
 
-    <div class="hearts">🏳️‍🌈 ❤️ 🏳️‍🌈</div>
-    <p class="tagline">Forever and always</p>
-    <div class="bottom-tag">Jan & Harol · Gay Buddies Forever 🌈</div>
+    <div class="track-svg-wrap">
+      <svg viewBox="0 0 920 680" xmlns="http://www.w3.org/2000/svg" width="100%" style="overflow:visible">
+        <defs>
+          <!-- car glow filter -->
+          <filter id="glow-car" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <!-- speed trail blur -->
+          <filter id="blur-trail">
+            <feGaussianBlur stdDeviation="5"/>
+          </filter>
+        </defs>
+
+        <!-- ═══════════════════════════════════ -->
+        <!-- CIRCUIT DE MONACO                  -->
+        <!-- Traced from real layout:            -->
+        <!-- S/F → Ste Devote → Beau Rivage →   -->
+        <!-- Massenet → Casino → Mirabeau Haute  -->
+        <!-- → Grand Hotel Hairpin → Mirabeau    -->
+        <!-- Bas → Portier → Tunnel → Chicane →  -->
+        <!-- Tabac → Swim Pool → Rascasse →      -->
+        <!-- Anthony Noghes → S/F               -->
+        <!-- ═══════════════════════════════════ -->
+
+        <!-- The Monaco track path used for all three stroke layers -->
+        <!-- Defined as a single shape string used three times below -->
+
+        <!-- 1. Outer papaya glow halo -->
+        <path fill="none" stroke="#FF8000" stroke-width="34" stroke-opacity="0.09"
+          d="M 220 570 L 480 570
+             C 520 570,545 558,555 535
+             C 565 512,558 490,540 478
+             L 520 465
+             C 505 455,498 440,502 420
+             C 506 400,520 388,538 382
+             C 560 374,590 370,618 358
+             C 646 346,665 326,668 300
+             C 671 274,658 252,638 240
+             C 618 228,592 228,572 235
+             C 556 241,544 253,540 268
+             C 536 283,540 300,548 314
+             C 556 328,562 340,560 356
+             C 558 372,548 382,535 388
+             C 518 396,497 396,480 386
+             C 463 376,452 358,450 336
+             C 448 314,455 292,462 272
+             C 469 252,472 230,466 210
+             C 460 190,444 175,424 168
+             C 404 161,380 163,360 172
+             C 340 181,324 198,318 218
+             C 312 238,316 260,326 278
+             C 336 296,350 308,354 324
+             C 358 340,350 356,338 364
+             C 320 374,298 374,278 366
+             C 258 358,244 340,238 318
+             C 232 296,234 272,244 250
+             C 254 228,270 210,278 190
+             C 286 170,282 148,272 130
+             C 262 112,246 100,228 94
+             C 210 88,190 90,174 98
+             C 155 108,144 126,140 148
+             C 136 170,140 196,148 218
+             C 156 240,164 260,162 282
+             C 160 304,148 322,134 336
+             C 118 352,100 362,88 376
+             C 76 390,72 408,76 426
+             C 80 444,92 458,108 466
+             C 124 474,144 476,162 472
+             C 178 468,192 458,200 444
+             C 210 428,212 408,220 392
+             C 228 376,240 364,248 380
+             C 252 392,248 408,244 424
+             C 240 440,236 458,238 476
+             C 240 494,248 510,260 522
+             C 272 534,290 540,308 540
+             L 220 540"/>
+
+        <!-- 2. Dark asphalt surface (main track body) -->
+        <path fill="none" stroke="#1c1c1c" stroke-width="26"
+          d="M 220 570 L 480 570
+             C 520 570,545 558,555 535
+             C 565 512,558 490,540 478
+             L 520 465
+             C 505 455,498 440,502 420
+             C 506 400,520 388,538 382
+             C 560 374,590 370,618 358
+             C 646 346,665 326,668 300
+             C 671 274,658 252,638 240
+             C 618 228,592 228,572 235
+             C 556 241,544 253,540 268
+             C 536 283,540 300,548 314
+             C 556 328,562 340,560 356
+             C 558 372,548 382,535 388
+             C 518 396,497 396,480 386
+             C 463 376,452 358,450 336
+             C 448 314,455 292,462 272
+             C 469 252,472 230,466 210
+             C 460 190,444 175,424 168
+             C 404 161,380 163,360 172
+             C 340 181,324 198,318 218
+             C 312 238,316 260,326 278
+             C 336 296,350 308,354 324
+             C 358 340,350 356,338 364
+             C 320 374,298 374,278 366
+             C 258 358,244 340,238 318
+             C 232 296,234 272,244 250
+             C 254 228,270 210,278 190
+             C 286 170,282 148,272 130
+             C 262 112,246 100,228 94
+             C 210 88,190 90,174 98
+             C 155 108,144 126,140 148
+             C 136 170,140 196,148 218
+             C 156 240,164 260,162 282
+             C 160 304,148 322,134 336
+             C 118 352,100 362,88 376
+             C 76 390,72 408,76 426
+             C 80 444,92 458,108 466
+             C 124 474,144 476,162 472
+             C 178 468,192 458,200 444
+             C 210 428,212 408,220 392
+             C 228 376,240 364,248 380
+             C 252 392,248 408,244 424
+             C 240 440,236 458,238 476
+             C 240 494,248 510,260 522
+             C 272 534,290 540,308 540
+             L 220 540"/>
+
+        <!-- 3. Centre-line dashes -->
+        <path fill="none" stroke="#2e2e2e" stroke-width="1" stroke-dasharray="12 9"
+          d="M 220 570 L 480 570
+             C 520 570,545 558,555 535
+             C 565 512,558 490,540 478
+             L 520 465
+             C 505 455,498 440,502 420
+             C 506 400,520 388,538 382
+             C 560 374,590 370,618 358
+             C 646 346,665 326,668 300
+             C 671 274,658 252,638 240
+             C 618 228,592 228,572 235
+             C 556 241,544 253,540 268
+             C 536 283,540 300,548 314
+             C 556 328,562 340,560 356
+             C 558 372,548 382,535 388
+             C 518 396,497 396,480 386
+             C 463 376,452 358,450 336
+             C 448 314,455 292,462 272
+             C 469 252,472 230,466 210
+             C 460 190,444 175,424 168
+             C 404 161,380 163,360 172
+             C 340 181,324 198,318 218
+             C 312 238,316 260,326 278
+             C 336 296,350 308,354 324
+             C 358 340,350 356,338 364
+             C 320 374,298 374,278 366
+             C 258 358,244 340,238 318
+             C 232 296,234 272,244 250
+             C 254 228,270 210,278 190
+             C 286 170,282 148,272 130
+             C 262 112,246 100,228 94
+             C 210 88,190 90,174 98
+             C 155 108,144 126,140 148
+             C 136 170,140 196,148 218
+             C 156 240,164 260,162 282
+             C 160 304,148 322,134 336
+             C 118 352,100 362,88 376
+             C 76 390,72 408,76 426
+             C 80 444,92 458,108 466
+             C 124 474,144 476,162 472
+             C 178 468,192 458,200 444
+             C 210 428,212 408,220 392
+             C 228 376,240 364,248 380
+             C 252 392,248 408,244 424
+             C 240 440,236 458,238 476
+             C 240 494,248 510,260 522
+             C 272 534,290 540,308 540
+             L 220 540"/>
+
+        <!-- ── KERBS at key corners (red/white alternating dashes over track) ── -->
+        <!-- Ste Dévote kerb -->
+        <path fill="none" stroke="#FF8000" stroke-width="26" stroke-linecap="butt" stroke-dasharray="5 5" opacity="0.65"
+          d="M 490 568 C 530 568,548 554,554 535"/>
+        <!-- Casino kerb -->
+        <path fill="none" stroke="#0067B1" stroke-width="26" stroke-linecap="butt" stroke-dasharray="5 5" opacity="0.6"
+          d="M 620 356 C 648 344,666 324,668 300"/>
+        <!-- Grand Hotel Hairpin kerb -->
+        <path fill="none" stroke="#FF8000" stroke-width="26" stroke-linecap="butt" stroke-dasharray="5 5" opacity="0.65"
+          d="M 572 233 C 552 240,540 255,537 270"/>
+        <!-- Rascasse kerb -->
+        <path fill="none" stroke="#0067B1" stroke-width="26" stroke-linecap="butt" stroke-dasharray="5 5" opacity="0.6"
+          d="M 246 476 C 240 493,247 510,260 522"/>
+
+        <!-- ── TUNNEL section — darker overlay to simulate covered road ── -->
+        <path fill="none" stroke="#0a0a0a" stroke-width="26"
+          d="M 450 336 C 448 314,455 292,462 272 C 469 252,472 230,466 210"/>
+        <path fill="none" stroke="#282828" stroke-width="20"
+          d="M 450 336 C 448 314,455 292,462 272 C 469 252,472 230,466 210"/>
+        <text x="488" y="292" fill="#444" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="1" transform="rotate(-72,488,292)">TUNNEL</text>
+
+        <!-- ── START / FINISH LINE — vertical bar, perpendicular to horizontal straight ── -->
+        <!-- Main straight runs L→R at y≈555. Perpendicular line = vertical rectangle. -->
+        <rect x="309" y="543" width="7" height="28" fill="white" opacity="0.95"/>
+        <!-- Checkered pattern on S/F bar -->
+        <rect x="309" y="543" width="3.5" height="7" fill="#111"/>
+        <rect x="312.5" y="543" width="3.5" height="7" fill="white"/>
+        <rect x="309"   y="550" width="3.5" height="7" fill="white"/>
+        <rect x="312.5" y="550" width="3.5" height="7" fill="#111"/>
+        <rect x="309"   y="557" width="3.5" height="7" fill="#111"/>
+        <rect x="312.5" y="557" width="3.5" height="7" fill="white"/>
+        <rect x="309"   y="564" width="3.5" height="7" fill="white"/>
+        <rect x="312.5" y="564" width="3.5" height="7" fill="#111"/>
+        <!-- S/F label -->
+        <text x="322" y="560" fill="#FF8000" font-family="'Barlow Condensed',sans-serif" font-weight="700" font-size="9" letter-spacing="0.5">S/F</text>
+
+        <!-- ── DRS zone indicator on main straight ── -->
+        <path fill="none" stroke="#00FF88" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="4 4"
+          d="M 230 557 L 308 557"/>
+        <polygon points="308,553 316,557 308,561" fill="#00FF88" opacity="0.5"/>
+        <text x="238" y="550" fill="#00FF88" font-family="'Barlow Condensed',sans-serif" font-weight="700" font-size="8" letter-spacing="1" opacity="0.6">DRS</text>
+
+        <!-- ── CORNER LABELS (positioned accurately for Monaco layout) ── -->
+        <!-- Ste Dévote: bottom-right of layout -->
+        <text x="562" y="578" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Ste Dévote</text>
+        <!-- Casino: far right upper area -->
+        <text x="674" y="298" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Casino</text>
+        <!-- Grand Hôtel: right side mid -->
+        <text x="575" y="225" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Grand Hôtel</text>
+        <!-- Tunnel label handled above -->
+        <!-- Swimming Pool: upper-centre -->
+        <text x="392" y="155" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Swim. Pool</text>
+        <!-- Massenet: upper-left area -->
+        <text x="270" y="88" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Portier</text>
+        <!-- Mirabeau: left side -->
+        <text x="42" y="362" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Massenet</text>
+        <!-- lower left hairpin area -->
+        <text x="42" y="428" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Mirabeau</text>
+        <!-- Rascasse: bottom area -->
+        <text x="170" y="530" fill="#666" font-family="'Barlow Condensed',sans-serif" font-weight="600" font-size="10" letter-spacing="0.5">Rascasse</text>
+
+        <!-- ── ANIMATED F1 CAR ── -->
+        <!-- Speed trail ghost (rendered first so car appears on top) -->
+        <g id="carTrail" filter="url(#blur-trail)" opacity="0.28">
+          <ellipse cx="0" cy="0" rx="20" ry="5" fill="#FF8000"/>
+        </g>
+
+        <!-- F1 Car group — JS moves this via transform attribute -->
+        <g id="f1car" filter="url(#glow-car)">
+          <!-- exhaust glow -->
+          <ellipse cx="-17" cy="0" rx="14" ry="3" fill="#FF4400" opacity="0.5"/>
+          <ellipse cx="-24" cy="0" rx="8"  ry="2" fill="#FF8000" opacity="0.25"/>
+          <!-- floor undertray -->
+          <rect x="-18" y="-4" width="38" height="8" rx="2" fill="#1a1a1a"/>
+          <!-- sidepod surfaces — papaya -->
+          <rect x="-12" y="-4.5" width="17" height="3.5" rx="1" fill="#FF8000"/>
+          <rect x="-12" y="1"    width="17" height="3.5" rx="1" fill="#FF8000"/>
+          <!-- Gulf blue sidepod stripes -->
+          <rect x="-12" y="-5" width="2.5" height="10" rx="0.8" fill="#0067B1"/>
+          <rect x="3.5"  y="-5" width="2.5" height="10" rx="0.8" fill="#0067B1"/>
+          <!-- main body — papaya -->
+          <rect x="-4" y="-5.5" width="22" height="11" rx="2.5" fill="#FF8000"/>
+          <!-- cockpit tub -->
+          <rect x="2" y="-4.5" width="10" height="9" rx="1.5" fill="#111"/>
+          <!-- visor/screen — blue tint -->
+          <rect x="3" y="-4" width="8" height="3" rx="1" fill="#0067B1" opacity="0.8"/>
+          <!-- halo -->
+          <path d="M 5 -5.5 Q 9 -8.5 13 -5.5" fill="none" stroke="#222" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- nose cone -->
+          <path d="M 16 -0.8 L 23 -0.4 L 23 0.4 L 16 0.8 Z" fill="#FF8000"/>
+          <!-- front wing endplate -->
+          <rect x="19" y="-3" width="4" height="6" rx="0.5" fill="#FF8000"/>
+          <line x1="19" y1="-2" x2="23" y2="-2" stroke="#CC6600" stroke-width="0.5"/>
+          <line x1="19" y1="0"  x2="23" y2="0"  stroke="#CC6600" stroke-width="0.5"/>
+          <line x1="19" y1="2"  x2="23" y2="2"  stroke="#CC6600" stroke-width="0.5"/>
+          <!-- rear wing — blue top, papaya beam -->
+          <rect x="-18" y="-6.5" width="8" height="3.5" rx="0.8" fill="#0067B1"/>
+          <rect x="-18" y="-3"   width="8" height="2.5" rx="0.5" fill="#FF8000"/>
+          <!-- rear wing endplates -->
+          <rect x="-19" y="-6.5" width="2" height="6" rx="0.4" fill="#0067B1"/>
+          <rect x="-11" y="-6.5" width="2" height="6" rx="0.4" fill="#0067B1"/>
+          <!-- wheels — rear -->
+          <ellipse cx="-10" cy="-6.5" rx="4.5" ry="3" fill="#222" stroke="#444" stroke-width="0.5"/>
+          <ellipse cx="-10" cy="6.5"  rx="4.5" ry="3" fill="#222" stroke="#444" stroke-width="0.5"/>
+          <!-- wheels — front -->
+          <ellipse cx="14" cy="-6.5" rx="4" ry="3" fill="#222" stroke="#444" stroke-width="0.5"/>
+          <ellipse cx="14" cy="6.5"  rx="4" ry="3" fill="#222" stroke="#444" stroke-width="0.5"/>
+          <!-- driver number -->
+          <text x="8" y="1.5" fill="#fff" font-family="'Barlow Condensed',sans-serif" font-weight="900" font-size="5.5" text-anchor="middle" dominant-baseline="middle">4</text>
+        </g>
+
+        <!-- Circuit name watermark at bottom -->
+        <text x="460" y="660" fill="#FF8000" font-family="'Barlow Condensed',sans-serif" font-weight="700" font-size="11" letter-spacing="3" text-anchor="middle" opacity="0.35">CIRCUIT DE MONACO</text>
+
+      </svg>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-label">Driver Number</span></div>
+      <div class="stat"><span class="stat-num">1st</span><span class="stat-label">Monaco 2025</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Race Wins</span></div>
+      <div class="stat"><span class="stat-num">P2</span><span class="stat-label">2024 WDC</span></div>
+    </div>
+
   </div>
+</div>
 
-  <script>
-    /* ── Confetti dots ── */
-    const colors = ['#ff4e6a','#ff9a3c','#ffe44d','#4ecb71','#4eaaff','#c06eff','#ff6ec7'];
-    const wrap = document.getElementById('confetti');
-    for (let i = 0; i < 55; i++) {
-      const d = document.createElement('div');
-      const c = colors[i % colors.length];
-      const size = 5 + Math.random() * 9;
-      d.className = 'dot';
-      d.style.cssText = `
-        left: ${Math.random() * 100}%;
-        bottom: -20px;
-        width: ${size}px;
-        height: ${size}px;
-        background: ${c};
-        --dur: ${4 + Math.random() * 6}s;
-        --delay: ${Math.random() * 7}s;
-      `;
-      wrap.appendChild(d);
-    }
+<div class="team-bar"></div>
 
-    /* ── Rainbow arc animation ── */
-    const canvas = document.getElementById('rainbow');
-    const wrap2 = document.getElementById('rainbowWrap');
-    const ctx = canvas.getContext('2d');
+<div class="info-section">
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-icon">🇬🇧</span>
+      <div class="info-title">Nationality</div>
+      <div class="info-val">British</div>
+      <div class="info-sub">Bristol, England</div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🏎️</span>
+      <div class="info-title">Team</div>
+      <div class="info-val">McLaren</div>
+      <div class="info-sub">McLaren Racing F1</div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">⚙️</span>
+      <div class="info-title">Power Unit</div>
+      <div class="info-val">Mercedes</div>
+      <div class="info-sub">1.6L V6 Hybrid</div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🎂</span>
+      <div class="info-title">Born</div>
+      <div class="info-val">13.11.1999</div>
+      <div class="info-sub">Age 25</div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🏁</span>
+      <div class="info-title">Chassis</div>
+      <div class="info-val">MCL39</div>
+      <div class="info-sub">2025 Season</div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🎨</span>
+      <div class="info-title">Livery</div>
+      <div class="info-val">Papaya &amp; Blue</div>
+      <div class="info-sub">Gulf Heritage</div>
+    </div>
+  </div>
+</div>
 
-    const PAUSE = 2000;   // pause between sweeps (ms)
-    const SWEEP = 1400;   // time to sweep across (ms)
-    const ARC_COLORS = ['#ff4e6a','#ff7a3c','#ffe44d','#4ecb71','#4eaaff','#c06eff'];
-    const STROKE = 7;
-    const ARC_COUNT = ARC_COLORS.length;
+<div class="footer">
+  <div class="footer-logo">LN4</div>
+  <div class="footer-text">McLaren F1 Team &nbsp;·&nbsp; 2025 FIA Formula One World Championship</div>
+  <div class="mcl-tag">MCL39 &nbsp;·&nbsp; Papaya &amp; Gulf</div>
+</div>
 
-    let arcRadius = 0;
+<script>
+// Waypoints: [x, y, headingAngleDeg] along Monaco circuit centerline
+// Angle 0 = pointing right, 90 = down, 180 = left, 270 = up (SVG coords)
+const waypoints = [
+  [308, 555, 0],    // S/F line — heading right along main straight
+  [400, 555, 0],    // main straight
+  [480, 558, 345],  // approaching Ste Dévote
+  [540, 542, 315],  // Ste Dévote apex — right turn
+  [548, 510, 272],  // Beau Rivage climb, heading upward
+  [540, 480, 268],  // uphill
+  [520, 464, 248],  // kink left
+  [505, 448, 272],  // leveling
+  [502, 422, 278],  // top of Beau Rivage section
+  [512, 396, 308],  // right, heading toward Casino
+  [536, 384, 338],  // Mirabeau Bas area curving right
+  [568, 368, 18],   // Casino approach
+  [618, 356, 2],    // Casino Square straight
+  [650, 342, 328],  // Casino corner entry
+  [668, 308, 272],  // Casino apex — right-hander
+  [664, 274, 248],  // Casino exit — descending
+  [644, 246, 212],  // descent to Mirabeau Haute
+  [618, 234, 182],  // Mirabeau Haute — heading left
+  [590, 230, 180],  // level
+  [572, 236, 152],  // Grand Hotel Hairpin entry
+  [550, 258, 130],  // hairpin turning
+  [538, 284, 92],   // hairpin apex — nearly heading down
+  [544, 308, 52],   // hairpin exit
+  [552, 328, 30],   // Mirabeau Bas
+  [560, 352, 14],   // Portier approach
+  [552, 382, 352],  // Portier — slight left then right
+  [530, 393, 316],  // Portier exit
+  [500, 394, 292],  // entering tunnel section
+  [476, 386, 264],  // tunnel entrance
+  [454, 368, 248],  // tunnel mid
+  [450, 344, 266],  // tunnel
+  [450, 318, 270],  // deep tunnel
+  [454, 292, 274],  // tunnel exit approach
+  [460, 270, 288],  // Nouvelle Chicane
+  [466, 248, 302],  // chicane
+  [460, 218, 284],  // post-chicane
+  [444, 178, 266],  // Swimming Pool S1
+  [424, 168, 222],  // Pool complex
+  [400, 164, 192],  // Pool
+  [370, 170, 162],  // Pool S2
+  [348, 186, 138],  // 
+  [326, 210, 116],  // 
+  [316, 234, 97],   // 
+  [318, 262, 80],   // 
+  [328, 282, 56],   // 
+  [348, 316, 32],   // 
+  [356, 338, 12],   // 
+  [350, 360, 356],  // 
+  [332, 372, 318],  // Tabac area
+  [308, 374, 292],  // 
+  [280, 370, 267],  // 
+  [260, 356, 237],  // 
+  [242, 332, 218],  // 
+  [234, 302, 272],  // 
+  [236, 272, 280],  // 
+  [246, 248, 304],  // Massenet
+  [262, 218, 312],  // 
+  [274, 192, 320],  // 
+  [280, 164, 308],  // Portier top
+  [272, 134, 274],  // 
+  [254, 110, 242],  // 
+  [228, 96, 202],   // 
+  [200, 90, 176],   // 
+  [178, 98, 146],   // 
+  [158, 118, 122],  // 
+  [142, 144, 100],  // 
+  [138, 172, 88],   // 
+  [142, 200, 76],   // 
+  [150, 226, 70],   // 
+  [158, 254, 76],   // 
+  [162, 280, 82],   // 
+  [156, 312, 96],   // 
+  [142, 332, 116],  // 
+  [122, 348, 132],  // 
+  [104, 364, 142],  // Mirabeau area
+  [88,  378, 152],  // 
+  [76,  400, 102],  // 
+  [76,  422, 87],   // 
+  [84,  448, 60],   // 
+  [106, 462, 30],   // 
+  [130, 472, 8],    // 
+  [156, 472, 2],    // 
+  [178, 466, 342],  // 
+  [196, 448, 314],  // 
+  [208, 424, 296],  // 
+  [218, 396, 284],  // 
+  [224, 376, 270],  // Rascasse approach
+  [240, 368, 252],  // 
+  [248, 382, 214],  // Rascasse entry
+  [248, 404, 92],   // Rascasse hairpin
+  [244, 424, 94],   // 
+  [240, 452, 96],   // Anthony Noghes
+  [238, 476, 94],   // 
+  [242, 502, 74],   // 
+  [254, 520, 50],   // 
+  [272, 534, 22],   // 
+  [294, 540, 4],    // 
+  [308, 540, 0],    // back to S/F
+];
 
-    function resize() {
-      const r = wrap2.getBoundingClientRect();
-      canvas.width = r.width;
-      arcRadius = r.width * 0.44;
-      canvas.height = arcRadius + 40;
-      canvas.style.top = `-${canvas.height - 10}px`;
-    }
+let wpIdx = 0;
+let t = 0;
+const SPEED = 0.016;
 
-    resize();
-    window.addEventListener('resize', resize);
+const car   = document.getElementById('f1car');
+const trail = document.getElementById('carTrail');
 
-    let startTime = null;
-    let phase = 'sweep';
-    let pauseStart = null;
+function lerp(a, b, t) { return a + (b - a) * t; }
 
-    function easeInOut(t) {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    }
+// Shortest-path angle interpolation
+function angleLerp(a, b, t) {
+  let diff = ((b - a % 360 + 540) % 360) - 180;
+  return a + diff * t;
+}
 
-    function drawRainbow(progress) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const cx = canvas.width / 2;
-      const cy = canvas.height;
+function tick() {
+  const n = waypoints.length;
+  const curr = waypoints[wpIdx];
+  const next  = waypoints[(wpIdx + 1) % n];
 
-      ctx.globalAlpha = 0.52;
-      ctx.lineCap = 'round';
+  const x     = lerp(curr[0], next[0], t);
+  const y     = lerp(curr[1], next[1], t);
+  const angle = angleLerp(curr[2], next[2], t);
 
-      for (let i = ARC_COUNT - 1; i >= 0; i--) {
-        const r = arcRadius - i * (STROKE + 3);
-        if (r <= 0) continue;
+  const tf = `translate(${x},${y}) rotate(${angle})`;
+  car.setAttribute('transform', tf);
+  trail.setAttribute('transform', tf);
 
-        // The arc goes from Math.PI to 0 (left to right semicircle)
-        // Arc circumference of a semicircle = π * r
-        const circumference = Math.PI * r;
+  t += SPEED;
+  if (t >= 1) { t = 0; wpIdx = (wpIdx + 1) % n; }
+  requestAnimationFrame(tick);
+}
 
-        // How much of the stroke to draw (0 = none, circumference = full)
-        const drawn = progress * circumference;
-
-        // setLineDash makes only `drawn` px of the stroke visible,
-        // then a huge gap so the rest is invisible
-        ctx.setLineDash([drawn, circumference]);
-        // lineDashOffset shifts where the dash starts — we start from
-        // the left end of the arc (Math.PI side) by setting offset to 0
-        ctx.lineDashOffset = 0;
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, Math.PI, 0);
-        ctx.strokeStyle = ARC_COLORS[i];
-        ctx.lineWidth = STROKE + 1;
-        ctx.shadowColor = ARC_COLORS[i];
-        ctx.shadowBlur = 14;
-        ctx.stroke();
-      }
-
-      ctx.setLineDash([]); // reset dash
-      ctx.globalAlpha = 1;
-    }
-
-    function animate(ts) {
-      if (phase === 'sweep') {
-        if (!startTime) startTime = ts;
-        const elapsed = ts - startTime;
-        const raw = Math.min(elapsed / SWEEP, 1);
-        const progress = easeInOut(raw);
-        drawRainbow(progress);
-        if (raw >= 1) {
-          phase = 'pause';
-          pauseStart = ts;
-        }
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (ts - pauseStart >= PAUSE) {
-          phase = 'sweep';
-          startTime = null;
-        }
-      }
-      requestAnimationFrame(animate);
-    }
-
-    requestAnimationFrame(animate);
-  </script>
+tick();
+</script>
 </body>
 </html>
